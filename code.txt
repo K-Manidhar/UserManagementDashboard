@@ -1,0 +1,238 @@
+<template>
+  <div class="container">
+    <div class="image" style="margin-top:-40px;">
+      <img src="./assets/1.jpg" height="700" width="1300">
+      
+    </div>
+
+    <div class="user-management-dashboard">
+      <h2 style="color: black ;"><B><i>User Management</i></B></h2>
+      <ul class="tabs">
+        <li @click="setActiveTab('userDetails')" :class="{ active: activeTab === 'userDetails' }">User Details</li>
+        <li @click="setActiveTab('accountCreation')" :class="{ active: activeTab === 'accountCreation' }">Account Creation</li>
+      </ul>
+
+      <div class="tab-content" v-if="activeTab === 'userDetails'">
+        <input type="text" v-model="searchTerm" placeholder="Search by username" />
+        <table>
+
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>ID</th>
+              <th>Creation Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in filteredUsers" :key="user.id">
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phone }}</td>
+              <td>{{ user.id }}</td>
+              <td>{{ user.creationDate }}</td>
+              <td>
+                <button @click="openUserReportModal(user)">Generate Report</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+
+      <div class="tab-content" v-else>
+        <form @submit.prevent="handleSubmit">
+          <label for="username">Username:</label>
+          <input type="text" id="username" v-model="username" required />
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="password" required />
+          <button type="submit">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      activeTab: 'userDetails',
+      searchTerm: '',
+      users: [
+        { id: 1, username: 'greenie', email: 'greeniee@gmail.com', phone: '123-456-7890', creationDate: '2023-11-16' },
+        { id: 2, username: 'albert', email: 'albert@gmail.com', phone: '987-654-3210', creationDate: '2023-11-16' },
+        { id: 3, username: 'thomas', email: 'thomas@gmail.com', phone: '555-123-4567', creationDate: '2023-11-16' },
+      ],
+      username: '',
+      password: '',
+    };
+  },
+  computed: {
+    filteredUsers() {
+      if (this.searchTerm === '') {
+        return this.users;
+      }
+      return this.users.filter(user => {
+        return user.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      });
+    },
+  },
+  methods: {
+    setActiveTab(tab) {
+      this.activeTab = tab;
+    },
+    openUserReportModal(user) {
+      // Implement user report modal logic here
+      console.log(`Generating report for user: ${user.username}`);
+    },
+    handleSubmit() {
+      if (this.activeTab === 'accountCreation') {
+        // Creating a new user
+        const newUser = {
+          id: this.users.length + 1,
+          username: this.username,
+          email: `${this.username.toLowerCase()}@example.com`,
+          phone: 'N/A',
+          creationDate: new Date().toISOString().split('T')[0],
+        };
+
+        this.users.push(newUser);
+
+        console.log(`Created account for user: ${this.username}`);
+      } else {
+        // Handle other logic for user details tab
+        console.log('Handling other logic for user details');
+      }
+
+      // Reset form fields
+      this.username = '';
+      this.password = '';
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* Add your styling here */
+body {
+  background-color: #f4f4f4; /* Light gray background */
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.image {
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 35%; /* Adjust opacity as needed */
+}
+
+.user-management-dashboard {
+  margin-top: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-left: 80%;
+  /*background-color: rgba(192, 170, 92, 0.8); /* Transparent indigo color */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(239, 108, 108, 0.2);
+  color: #020202; /* White text color */
+  z-index: 1;
+}
+
+.tabs {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  color: black;
+  background-color: rgba(11, 243, 127, 0.8);
+  overflow-auto: auto;
+  white-space: nowrap;
+}
+
+.tabs li {
+  display: inline-block;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.tabs li:hover {
+  background-color: rgba(203, 121, 184, 0.8); /* Lighter transparent indigo color on hover */
+}
+
+.tabs li.active {
+  background-color:  rgba(123, 216, 247, 0.8) ;/* Darker transparent indigo color for active tab */
+  border-color: #283593; /* Slightly darker border color */
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid transparent;
+  margin-top: 20px;
+  margin-right: 0px;
+  background-color: rgba(254, 190, 254, 0.8); /* Transparent black background color for the content area */
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(110, 101, 101, 0.2);
+  position: relative;
+  z-index: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(189, 189, 189, 0.5); /* Transparent light gray border color */
+}
+
+th, td {
+  padding: 15px; /* Increased padding for better spacing */
+  border: 1px solid rgba(224, 224, 224, 0.5); /* Transparent lighter gray border color */
+  text-align: left;
+}
+
+thead {
+  background-color: rgba(57, 73, 171, 0.8); /* Transparent dark blue background color for the header */
+  color: #ffffff; /* White text color for the header */
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 15px;
+  border: 1px solid rgba(189, 189, 189, 0.5);
+  margin-bottom: 10px;
+  background-color: rgba(255, 255, 255, 0.8); /* Transparent white background color */
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+button {
+  padding: 15px 20px;
+  background-color: rgba(57, 73, 171, 0.8); /* Transparent dark blue button color */
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  border-radius: 30px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: rgba(40, 53, 147, 0.8); /* Slightly darker transparent blue on hover */
+}
+
+</style>
